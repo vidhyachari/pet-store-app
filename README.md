@@ -211,10 +211,8 @@ The AI chatbot (PawPrompt) can:
 - **Check stock levels** for specific items
 - **List products** by animal type (dog/cat)
 - **Add items to cart** through natural conversation
-- **Provide recommendations** based on pet needs
 
 ### Example Chatbot Interactions:
-- "What toys do you have for dogs?"
 - "How much stock do you have of Sir Chews-a-Lot?"
 - "Add 2 Bark Knight toys to my cart"
 - "What grooming services do you offer?"
