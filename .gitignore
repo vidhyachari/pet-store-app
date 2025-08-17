@@ -16,6 +16,11 @@ chatbot/.env
 *.sqlite3
 backend/petstore.db
 
+# ChromaDB vector database
+.chroma/
+*.chroma
+chroma/
+
 # Logs
 logs
 *.log
