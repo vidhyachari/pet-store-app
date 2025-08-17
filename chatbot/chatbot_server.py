@@ -6,18 +6,37 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from openai import OpenAI
 from dotenv import load_dotenv
+from retriever import retrieve_context
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Set the API key from environment variable if available
+if "OPENAI_API_KEY" in os.environ and "CHROMA_OPENAI_API_KEY" not in os.environ:
+    os.environ["CHROMA_OPENAI_API_KEY"] = os.environ["OPENAI_API_KEY"]
+
+# If still not set, prompt user for API key
+if "CHROMA_OPENAI_API_KEY" not in os.environ:
+    api_key = input("Please enter your OpenAI API key: ").strip()
+    os.environ["CHROMA_OPENAI_API_KEY"] = api_key
+
+# System prompt for the chatbot
+SYSTEM_PROMPT = """You are PawPrompt, a helpful pet store assistant.
+- Prefer facts from CONTEXT when answering.
+- If context is missing, say you're unsure instead of guessing.
+- For health/symptom questions add: "This is educational info, not a substitute for a veterinarian."
+- When using external facts, include a short source note like (Source: ASPCA) or (Source: AKC) if the line originates from known orgs.
+- If the user asks to add items or check stock, use the provided tools.
+"""
 
 # Initialize
 app = Flask(__name__)
 CORS(app)
 
 try:
-    api_key = os.getenv('OPENAI_API_KEY')
+    api_key = os.getenv('OPENAI_API_KEY') or os.getenv('CHROMA_OPENAI_API_KEY')
     if not api_key:
-        raise ValueError("OPENAI_API_KEY environment variable not set")
+        raise ValueError("OpenAI API key not found in environment variables")
     client = OpenAI(api_key=api_key)
 except (TypeError, ValueError) as e:
     exit(f"❌ {e}")
@@ -132,6 +151,15 @@ tools = [
     { "type": "function", "function": { "name": "add_item_to_cart", "description": "Adds a specified quantity of an item to the user's shopping cart.", "parameters": { "type": "object", "properties": { "item_name": {"type": "string", "description": "The name of the item to add."}, "quantity": {"type": "integer", "description": "The number of items to add. Defaults to 1."}}, "required": ["item_name"],},},},
 ]
 
+# RAG Message building
+def build_messages(user_msg: str, context: str):
+    """Build messages with system prompt and context for RAG"""
+    return [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": f"CONTEXT:\n{context or '(no relevant context)'}"},
+        {"role": "user",   "content": user_msg},
+    ]
+
 # --- Main API Route ---
 @app.route('/api/chat', methods=['POST'])
 def chat():
@@ -141,7 +169,22 @@ def chat():
         return jsonify({"error": "No messages provided"}), 400
 
     try:
-        first_response = client.chat.completions.create( model="gpt-4", messages=messages, tools=tools, tool_choice="auto" )
+        # Get the user's message (last message in the conversation)
+        user_message = messages[-1]['content'] if messages else ""
+        
+        # Retrieve relevant context from RAG knowledge base
+        context = retrieve_context(user_message, k=4)
+        
+        # Build messages with system prompt and context
+        rag_messages = build_messages(user_message, context)
+        
+        # Add conversation history (excluding the last user message since it's in rag_messages)
+        conversation_history = messages[:-1] if len(messages) > 1 else []
+        
+        # Combine conversation history with RAG messages
+        all_messages = conversation_history + rag_messages
+        
+        first_response = client.chat.completions.create( model="gpt-4", messages=all_messages, tools=tools, tool_choice="auto" )
         response_message = first_response.choices[0].message
         tool_calls = response_message.tool_calls
 
@@ -154,12 +197,12 @@ def chat():
             function_args = json.loads(tool_call.function.arguments)
             function_response = function_to_call(**function_args)
             
-            messages.append(response_message)
-            messages.append(
+            all_messages.append(response_message)
+            all_messages.append(
                 { "tool_call_id": tool_call.id, "role": "tool", "name": function_name, "content": function_response, }
             )
 
-            second_response = client.chat.completions.create( model="gpt-4", messages=messages, )
+            second_response = client.chat.completions.create( model="gpt-4", messages=all_messages, )
             final_response_content = second_response.choices[0].message.content
 
             # --- THIS IS THE NEW PART ---
