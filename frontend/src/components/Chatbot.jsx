@@ -7,7 +7,7 @@ function Chatbot() {
   const { addToCart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Hello! I am PawPrompt. Ask me about our products, stock levels, dog/cat breeds, grooming services, feeding guides, or care tips. I can also add items to your cart!' }
+    { role: 'assistant', content: '🐾 Welcome! I\'m your pet care assistant.\n\nReady to help with:\n🦴 Products & Inventory\n🐕🐱 Breed Profiles\n✂️ Grooming Services\n🍽️ Nutrition Guides\n💝 Care Advice\n\nHow can I help your pet today?' }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -69,8 +69,8 @@ function Chatbot() {
       <div className={`chat-window ${isOpen ? 'open' : ''}`}>
         <div className="chat-header">
           <div className="header-content">
-            <h3>PawPrompt</h3>
-            <p className="disclaimer">Note: Information is for general guidance. For health concerns, consult your veterinarian.</p>
+            <h3>🐾 PawPrompt Assistant</h3>
+            <p className="disclaimer">⚠️ Disclaimer: Information provided is for educational purposes only. This is not a substitute for professional veterinary care. Always consult your veterinarian for medical advice, diagnosis, and treatment of your pet.</p>
           </div>
           <button onClick={toggleChat} className="chat-close-btn"><FiX /></button>
         </div>
@@ -98,7 +98,7 @@ function Chatbot() {
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Ask a question..."
+            placeholder="💬 How can I help your pet today?"
             autoComplete="off"
           />
           <button type="submit"><FiSend /></button>

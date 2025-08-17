@@ -1,21 +1,25 @@
 /* --- 1. THEME & GLOBAL STYLES --- */
 :root {
-  --bg-color: #F8F5F2;
-  --text-dark: #4B423D;
-  --text-light: #A59F9A;
-  --accent-color: #C47A5A;
+  --bg-color: #f5f7fa;
+  --text-dark: #2c3e50;
+  --text-light: #7f8c8d;
+  --accent-color: #667eea;
+  --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --card-bg: #FFFFFF;
-  --border-color: #EAE5E1;
+  --border-color: rgba(102, 126, 234, 0.1);
   --font-family: 'Inter', sans-serif;
+  --shadow-light: 0 4px 12px rgba(102, 126, 234, 0.1);
+  --shadow-medium: 0 8px 25px rgba(102, 126, 234, 0.15);
 }
 
 body {
   margin: 0;
   font-family: var(--font-family);
-  background-color: var(--bg-color);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   color: var(--text-dark);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
 
 .app-container {
@@ -46,7 +50,10 @@ body {
 .logo-text {
   font-weight: 700;
   font-size: 1.5rem;
-  color: var(--text-dark);
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .header-actions {
@@ -59,10 +66,20 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #EFEAE6;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.75rem 1.25rem;
+  border-radius: 25px;
   color: var(--text-light);
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  box-shadow: var(--shadow-light);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.search-bar:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+  transform: translateY(-1px);
 }
 
 .search-bar input {
@@ -76,8 +93,16 @@ body {
 
 .cart-icon {
   font-size: 1.5rem;
-  color: var(--text-dark);
+  color: var(--accent-color);
   cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0.5rem;
+  border-radius: 50%;
+}
+
+.cart-icon:hover {
+  background: rgba(102, 126, 234, 0.1);
+  transform: scale(1.1);
 }
 
 
@@ -85,8 +110,13 @@ body {
 .welcome-header {
   text-align: center;
   font-size: 2.5rem;
-  font-weight: 500;
+  font-weight: 600;
   margin: 2rem 0;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(102, 126, 234, 0.1);
 }
 
 .tabs {
@@ -94,24 +124,38 @@ body {
   justify-content: center;
   gap: 2.5rem;
   margin-bottom: 3rem;
-  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 0;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow: var(--shadow-light);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .tabs button {
-  padding: 0.5rem 0.25rem 1rem 0.25rem;
+  padding: 0.75rem 1.5rem;
   font-size: 1rem;
   font-weight: 500;
   color: var(--text-light);
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-radius: 15px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tabs button:hover {
+  color: var(--accent-color);
+  background: rgba(102, 126, 234, 0.1);
 }
 
 .tabs button.active {
-  color: var(--text-dark);
-  border-bottom-color: var(--text-dark);
+  color: white;
+  background: var(--accent-gradient);
+  box-shadow: var(--shadow-light);
+  transform: translateY(-1px);
 }
 
 
@@ -130,14 +174,22 @@ body {
   position: absolute;
   top: -5px;
   right: -10px;
-  background-color: red;
+  background: var(--accent-gradient);
   color: white;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 0.75rem;
   font-weight: bold;
+  box-shadow: var(--shadow-light);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }

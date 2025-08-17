@@ -70,6 +70,20 @@ A modern, full-stack pet store application with an AI-powered chatbot assistant.
 - npm or yarn
 - OpenAI API key
 
+### Getting the Code
+**For the latest RAG integration version:**
+```bash
+# Clone the repository
+git clone <repository-url>
+cd pet-store-app
+
+# Switch to the RAG integration branch
+git checkout v2-rag-chromadb
+
+# OR pull the specific tag
+git checkout v2.0.0-rag-chromadb
+```
+
 ### Installation
 
 1. **Clone the repository**
@@ -117,7 +131,13 @@ A modern, full-stack pet store application with an AI-powered chatbot assistant.
    python3 ingest_kb.py
    ```
    
-   This will create a ChromaDB knowledge base from the documentation files in the `docs/` folder.
+   This will:
+   - Create a ChromaDB knowledge base in the `.chroma/` directory
+   - Process all markdown files from the `docs/` folder
+   - Generate embeddings using OpenAI's text-embedding-3-small model
+   - Index 83+ chunks of text for RAG retrieval
+   
+   **Note:** You'll be prompted for your OpenAI API key if not set in environment variables.
 
 8. **Initialize Database**
    ```bash
@@ -247,7 +267,7 @@ The AI chatbot (PawPrompt) can:
 - "How much stock do you have of Sir Chews-a-Lot?"
 - "Add 2 Bark Knight toys to my cart"
 - "What grooming services do you offer?"
-- "Tell me about Golden Retriever breeds"
+- "Tell me about Labrador Retriever breeds"
 - "What feeding tips do you have for puppies?"
 - "How should I care for my cat's coat?"
 
@@ -295,12 +315,21 @@ npm run seed     # Seed database with sample data
 To add new information to the knowledge base:
 
 1. **Add markdown files** to the `docs/` folder
-2. **Update the ingest script** in `scripts/ingest_kb.py` to include new files
+2. **Update the ingest script** in `scripts/ingest_kb.py` to include new files:
+   ```python
+   docs += load("docs/your_new_file.md", "category_name")
+   ```
 3. **Re-run ingestion**:
    ```bash
    cd scripts
    python3 ingest_kb.py
    ```
+
+### Troubleshooting Ingestion
+- **API Key Issues**: Ensure `CHROMA_OPENAI_API_KEY` or `OPENAI_API_KEY` is set
+- **File Not Found**: Check that markdown files exist in the `docs/` folder
+- **Permission Errors**: Ensure write access to create the `.chroma/` directory
+- **Memory Issues**: Large files may need to be split into smaller chunks
 
 ### Knowledge Base Contents
 The current knowledge base includes:
@@ -323,10 +352,22 @@ The current knowledge base includes:
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## 🏷️ Version Information
+
+**Current Version:** v2.0.0-rag-chromadb
+- **Branch:** `v2-rag-chromadb`
+- **Tag:** `v2.0.0-rag-chromadb`
+- **Features:** RAG integration with ChromaDB, enhanced UI with gradient theme
+
+**Previous Version:** v1.0.0
+- **Branch:** `main`
+- **Features:** Basic chatbot without RAG integration
+
 ## 🙏 Acknowledgments
 
 - React team for the amazing framework
 - OpenAI for the GPT-4 integration
+- ChromaDB for vector database capabilities
 - The pet-loving community for inspiration
 
 ---
