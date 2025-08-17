@@ -7,7 +7,7 @@ function Chatbot() {
   const { addToCart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Hello! I am PawPrompt. Ask me about our stock or add items to your cart!' }
+    { role: 'assistant', content: 'Hello! I am PawPrompt. Ask me about our products, stock levels, dog/cat breeds, grooming services, feeding guides, or care tips. I can also add items to your cart!' }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +68,10 @@ function Chatbot() {
     <>
       <div className={`chat-window ${isOpen ? 'open' : ''}`}>
         <div className="chat-header">
-          <h3>PawPrompt</h3>
+          <div className="header-content">
+            <h3>PawPrompt</h3>
+            <p className="disclaimer">Note: Information is for general guidance. For health concerns, consult your veterinarian.</p>
+          </div>
           <button onClick={toggleChat} className="chat-close-btn"><FiX /></button>
         </div>
         <div className="messages-list">

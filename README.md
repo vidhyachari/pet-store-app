@@ -15,10 +15,13 @@ A modern, full-stack pet store application with an AI-powered chatbot assistant.
 
 ### 🤖 **AI-Powered Chatbot Assistant**
 - **PawPrompt**: Intelligent chatbot that helps customers find products
+- **RAG (Retrieval-Augmented Generation)**: Knowledge base integration with ChromaDB
 - **Natural Language Processing**: Ask questions about products in plain English
 - **Stock Checking**: Real-time inventory queries
 - **Cart Integration**: Add items to cart directly through chat
 - **Product Recommendations**: Get suggestions based on pet type (dog/cat)
+- **Knowledge Base**: Access to breed info, care guides, feeding guides, and grooming services
+- **Source Attribution**: Responses include source information from documentation
 
 ### 🎨 **Modern UI/UX**
 - **Beautiful Design**: Clean, modern interface with pet-themed styling
@@ -46,6 +49,9 @@ A modern, full-stack pet store application with an AI-powered chatbot assistant.
 - **OpenAI GPT-4**: Advanced language model for natural conversations
 - **Function Calling**: Structured API for database operations
 - **Real-time Integration**: Seamless connection with frontend
+- **ChromaDB**: Vector database for knowledge base storage
+- **RAG System**: Retrieval-Augmented Generation for factual responses
+- **Embedding Functions**: OpenAI text-embedding-3-small for semantic search
 
 ## 🔐 Security
 
@@ -54,6 +60,7 @@ A modern, full-stack pet store application with an AI-powered chatbot assistant.
 - The `.env` file is automatically ignored by git
 - Always use environment variables for sensitive configuration
 - Keep your API keys secure and rotate them regularly
+- The `.chroma` directory contains the knowledge base and should not be committed to version control
 
 ## 🚀 Quick Start
 
@@ -61,6 +68,7 @@ A modern, full-stack pet store application with an AI-powered chatbot assistant.
 - Node.js (v16 or higher)
 - Python 3.8+
 - npm or yarn
+- OpenAI API key
 
 ### Installation
 
@@ -90,7 +98,7 @@ A modern, full-stack pet store application with an AI-powered chatbot assistant.
 5. **Install Chatbot Dependencies**
    ```bash
    cd ../chatbot
-   pip install flask flask-cors openai
+   pip install flask flask-cors openai chromadb python-dotenv
    ```
 
 6. **Set up Environment Variables**
@@ -98,11 +106,20 @@ A modern, full-stack pet store application with an AI-powered chatbot assistant.
    # Create .env file in chatbot directory
    cd chatbot
    echo "OPENAI_API_KEY=your_openai_api_key_here" > .env
+   echo "CHROMA_OPENAI_API_KEY=your_openai_api_key_here" >> .env
    ```
    
    **Important:** Replace `your_openai_api_key_here` with your actual OpenAI API key from [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
 
-7. **Initialize Database**
+7. **Set up Knowledge Base**
+   ```bash
+   cd ../scripts
+   python3 ingest_kb.py
+   ```
+   
+   This will create a ChromaDB knowledge base from the documentation files in the `docs/` folder.
+
+8. **Initialize Database**
    ```bash
    cd ../backend
    npm run seed
@@ -162,7 +179,17 @@ pet-store-app/
 │   ├── seed.js            # Database seeding script
 │   └── app.js             # Express server setup
 ├── chatbot/                # AI chatbot server
-│   └── chatbot_server.py   # Flask chatbot application
+│   ├── chatbot_server.py   # Flask chatbot application
+│   └── retriever.py        # RAG knowledge base retriever
+├── scripts/                # Utility scripts
+│   └── ingest_kb.py        # Knowledge base ingestion script
+├── docs/                   # Documentation files for knowledge base
+│   ├── breed_info.md       # Dog and cat breed information
+│   ├── care_guides.md      # Pet care guides
+│   ├── feeding_guides.md   # Feeding and nutrition guides
+│   ├── grooming_services.md # Grooming service details
+│   ├── product_catalog.md  # Product information
+│   └── faq.md             # Frequently asked questions
 └── public/                 # Static assets
 ```
 
@@ -211,11 +238,18 @@ The AI chatbot (PawPrompt) can:
 - **Check stock levels** for specific items
 - **List products** by animal type (dog/cat)
 - **Add items to cart** through natural conversation
+- **Provide breed information** from comprehensive knowledge base
+- **Share care and feeding guides** with source attribution
+- **Offer grooming advice** based on documented services
+- **Answer FAQs** with factual, sourced responses
 
 ### Example Chatbot Interactions:
 - "How much stock do you have of Sir Chews-a-Lot?"
 - "Add 2 Bark Knight toys to my cart"
 - "What grooming services do you offer?"
+- "Tell me about Golden Retriever breeds"
+- "What feeding tips do you have for puppies?"
+- "How should I care for my cat's coat?"
 
 ## 🎯 Key Features in Detail
 
@@ -254,6 +288,28 @@ npm start        # Start production server
 npm run dev      # Start with nodemon (development)
 npm run seed     # Seed database with sample data
 ```
+
+## 🧠 Knowledge Base Management
+
+### Adding New Documentation
+To add new information to the knowledge base:
+
+1. **Add markdown files** to the `docs/` folder
+2. **Update the ingest script** in `scripts/ingest_kb.py` to include new files
+3. **Re-run ingestion**:
+   ```bash
+   cd scripts
+   python3 ingest_kb.py
+   ```
+
+### Knowledge Base Contents
+The current knowledge base includes:
+- **Breed Information**: Detailed profiles of dog and cat breeds
+- **Care Guides**: Comprehensive pet care instructions
+- **Feeding Guides**: Nutrition and feeding recommendations
+- **Grooming Services**: Detailed service descriptions
+- **Product Catalog**: Product information and details
+- **FAQ**: Frequently asked questions and answers
 
 ## 🤝 Contributing
 
